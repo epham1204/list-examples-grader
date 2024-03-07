@@ -34,9 +34,16 @@ java -cp $CPATH org.junit.runner.JUnitCore TestListExamples > junit-output.txt
 echo "Program compiled successfully!"
 
 # lastline= $(cat junit-output.txt | tail -n 2 | head -n 1)
-tests=$(cat junit-output.txt | tail -n 2 | head -n 1 | awk -F '[, ]' '{print $3}')
-failures=$(cat junit-output.txt | tail -n 2 | head -n 1 | awk '{print $5}')
-successes=$(($tests - $failures))
+tests=$(grep -o 'Tests run: [0-9]*' "junit-output.txt" | awk '{print$3}')
+failures=$(grep -o 'Failures: [0-9]*' "junit-output.txt" | awk '{print $2}')
+successes=$((tests-failures))
+if [[ $failures -ne 1 ]];then
+echo Full Failure!
+exit
+fi
+
+echo $tests
+echo $failures
 echo "$successes / $tests"
 # Draw a picture/take notes on the directory structure that's set up after
 # getting to this point
